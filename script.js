@@ -16,6 +16,130 @@ document.addEventListener('DOMContentLoaded', () => {
     const SHELL_ANIM_MS = 220;
     const FLASH_LEAD_MS = 150;
 
+    // Pixel font map: each letter is 5 wide × 7 tall (binary strings)
+    const PIXEL_FONT = {
+        'H': ['10001','10001','10001','11111','10001','10001','10001'],
+        'A': ['01110','10001','10001','11111','10001','10001','10001'],
+        'P': ['11110','10001','10001','11110','10000','10000','10000'],
+        'Y': ['10001','10001','01010','00100','00100','00100','00100'],
+        'B': ['11110','10001','10001','11110','10001','10001','11110'],
+        'I': ['11111','00100','00100','00100','00100','00100','11111'],
+        'R': ['11110','10001','10001','11110','10100','10010','10001'],
+        'T': ['11111','00100','00100','00100','00100','00100','00100'],
+        'D': ['11100','10010','10001','10001','10001','10010','11100'],
+        'M': ['10001','11011','10101','10101','10001','10001','10001'],
+        'N': ['10001','11001','10101','10101','10011','10001','10001'],
+        ' ': ['00000','00000','00000','00000','00000','00000','00000'],
+    };
+
+    function renderCubeText(containerId, text) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        const words = text.toUpperCase().split(' ');
+        words.forEach((word, wi) => {
+            const wordDiv = document.createElement('div');
+            wordDiv.className = 'cube-word';
+            for (let ci = 0; ci < word.length; ci++) {
+                const ch = word[ci];
+                const rows = PIXEL_FONT[ch];
+                if (!rows) continue;
+                const letterDiv = document.createElement('div');
+                letterDiv.className = 'cube-letter';
+                for (let r = 0; r < 7; r++) {
+                    for (let c = 0; c < 5; c++) {
+                        const pixel = document.createElement('div');
+                        if (rows[r][c] === '1') {
+                            pixel.className = 'cube-pixel';
+                        } else {
+                            pixel.className = 'cube-pixel-empty';
+                        }
+                        letterDiv.appendChild(pixel);
+                    }
+                }
+                wordDiv.appendChild(letterDiv);
+            }
+            container.appendChild(wordDiv);
+        });
+    }
+
+    // Text particle system
+    const textParticleShapes = ['×', '○', '△', '□'];
+    const textParticleColors = [
+        'rgba(200, 170, 235, 0.7)',
+        'rgba(170, 215, 180, 0.7)',
+        'rgba(240, 200, 220, 0.7)',
+        'rgba(235, 220, 180, 0.7)',
+        'rgba(190, 200, 235, 0.7)',
+    ];
+    let textParticleTimers = [];
+    let textParticleElements = [];
+
+    function spawnTextParticle() {
+        if (mode !== 'birthday-grid') return;
+
+        const containers = [
+            document.getElementById('birthday-text-top'),
+            document.getElementById('birthday-text-bottom')
+        ];
+        const container = containers[Math.floor(Math.random() * containers.length)];
+        if (!container) return;
+
+        const rect = container.getBoundingClientRect();
+        const el = document.createElement('span');
+        el.className = 'cube-text-particle';
+        el.textContent = textParticleShapes[Math.floor(Math.random() * textParticleShapes.length)];
+        el.style.color = textParticleColors[Math.floor(Math.random() * textParticleColors.length)];
+
+        // Position at random edge of the text container
+        const side = Math.floor(Math.random() * 4);
+        if (side === 0) { el.style.left = (rect.left + Math.random() * rect.width) + 'px'; el.style.top = (rect.top - 5) + 'px'; }
+        else if (side === 1) { el.style.left = (rect.left + Math.random() * rect.width) + 'px'; el.style.top = (rect.bottom + 5) + 'px'; }
+        else if (side === 2) { el.style.left = (rect.left - 10) + 'px'; el.style.top = (rect.top + Math.random() * rect.height) + 'px'; }
+        else { el.style.left = (rect.right + 10) + 'px'; el.style.top = (rect.top + Math.random() * rect.height) + 'px'; }
+
+        const anims = ['spring-float-up', 'spring-drift-right', 'spring-drift-left', 'spring-wander'];
+        const anim = anims[Math.floor(Math.random() * anims.length)];
+        const dur = 4 + Math.random() * 6;
+        el.style.animationName = anim;
+        el.style.animationDuration = dur + 's';
+
+        document.body.appendChild(el);
+        textParticleElements.push(el);
+
+        const removeTimer = setTimeout(() => {
+            if (el.parentNode) el.parentNode.removeChild(el);
+            textParticleElements = textParticleElements.filter(e => e !== el);
+        }, dur * 1000 + 200);
+        textParticleTimers.push(removeTimer);
+
+        // Schedule next
+        if (mode === 'birthday-grid') {
+            const next = setTimeout(() => spawnTextParticle(), (1 + Math.random() * 3) * 1000);
+            textParticleTimers.push(next);
+        }
+    }
+
+    function startTextParticles() {
+        const count = 3 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < count; i++) {
+            const t = setTimeout(() => spawnTextParticle(), 600 + i * (300 + Math.random() * 600));
+            textParticleTimers.push(t);
+        }
+    }
+
+    function clearTextParticles() {
+        textParticleTimers.forEach(t => clearTimeout(t));
+        textParticleTimers = [];
+        textParticleElements.forEach(el => { if (el.parentNode) el.parentNode.removeChild(el); });
+        textParticleElements = [];
+    }
+
+    // Render cube text on load
+    renderCubeText('birthday-text-top', 'Happy Birthday');
+    renderCubeText('birthday-text-bottom', 'Miranda');
+
     // Load photos from birthday folder
     // Note: Update this array when adding/removing photos from the birthday/ folder
     function loadBirthdayPhotos() {
@@ -62,6 +186,79 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
+    // Birthday diddy + confetti (first time only)
+    let birthdayDiddyPlayed = false;
+
+    function playBirthdayDiddy() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const t = ctx.currentTime;
+            // C5, E5, G5, C6, G5, A5, B5, C6
+            const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 880.00, 987.77, 1046.50];
+            const durations = [0.28, 0.28, 0.28, 0.35, 0.22, 0.22, 0.22, 0.50];
+            let offset = 0;
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, t + offset);
+                gain.gain.setValueAtTime(0.1, t + offset);
+                gain.gain.setValueAtTime(0.1, t + offset + durations[i] * 0.6);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + offset + durations[i]);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(t + offset);
+                osc.stop(t + offset + durations[i] + 0.05);
+
+                // Sparkle harmonic
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(freq * 2, t + offset);
+                gain2.gain.setValueAtTime(0.03, t + offset);
+                gain2.gain.exponentialRampToValueAtTime(0.001, t + offset + durations[i] * 0.8);
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.start(t + offset);
+                osc2.stop(t + offset + durations[i]);
+
+                offset += durations[i] * 0.85;
+            });
+        } catch (e) {}
+    }
+
+    function fireConfetti() {
+        const count = 80 + Math.floor(Math.random() * 40);
+        const colors = [
+            'rgba(200, 170, 235, 0.9)',
+            'rgba(160, 215, 175, 0.9)',
+            'rgba(240, 190, 210, 0.9)',
+            'rgba(235, 215, 160, 0.9)',
+            'rgba(175, 200, 240, 0.9)',
+            'rgba(220, 180, 240, 0.9)',
+            'rgba(240, 175, 170, 0.9)',
+        ];
+        for (let i = 0; i < count; i++) {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            const isRect = Math.random() > 0.5;
+            el.style.width = isRect ? '8px' : '6px';
+            el.style.height = isRect ? '4px' : '6px';
+            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+            el.style.setProperty('--x', ((Math.random() - 0.5) * 80) + 'vw');
+            el.style.setProperty('--y', (-(50 + Math.random() * 25)) + 'vh');
+            el.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+            el.style.left = '50vw';
+            el.style.top = '85vh';
+            el.style.animationDelay = (Math.random() * 0.3) + 's';
+            el.style.animationDuration = (2.5 + Math.random() * 1) + 's';
+            document.body.appendChild(el);
+            setTimeout(() => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 4000);
+        }
+    }
+
     function enterBirthdayGrid() {
         if (mode !== 'main' || locked || current !== 'front') return;
         if (!showFace('top', false)) return;
@@ -76,6 +273,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 mode = 'birthday-grid';
                 scene.classList.add('is-birthday-grid');
                 birthdayGridView.setAttribute('aria-hidden', 'false');
+                startTextParticles();
+                if (!birthdayDiddyPlayed) {
+                    birthdayDiddyPlayed = true;
+                    setTimeout(() => {
+                        playBirthdayDiddy();
+                        fireConfetti();
+                    }, 500);
+                }
                 setTimeout(() => {
                     birthdayFlash.classList.remove('is-flash-opening');
                     scene.classList.remove('is-birthday-opening');
@@ -90,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setLock(650);
         mode = 'main';
         playSimpleSound(330);
+        clearTextParticles();
 
         // Fire flash to mask the swap
         birthdayFlash.classList.remove('is-flash-opening');

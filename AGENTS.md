@@ -172,6 +172,27 @@ The top front option can branch into a dedicated submenu experience inspired by 
 11. `Escape` in birthday view triggers the same back sequence.
 12. During birthday enter/exit transitions, clicks are locked out to avoid state corruption.
 
+### Cube text rules
+
+"Happy Birthday" appears above the 3×3 grid; "Miranda" appears below it. Text is rendered as pixel-font letters made of tiny cubes.
+
+1. Each letter is defined in a `PIXEL_FONT` map in `script.js` as a 5×7 binary grid. `renderCubeText()` generates DOM elements on `DOMContentLoaded`.
+2. Each filled cell becomes a `.cube-pixel` div; empty cells become `.cube-pixel-empty`. Letters are grouped in `.cube-letter` grids, words in `.cube-word` flex containers.
+3. **Pixel size**: controlled by `--cube-pixel-size` CSS custom property on `.cube-text` (default `6px`). Change this single value to resize all text.
+4. **Color**: forest green accent — `linear-gradient(135deg, rgba(100, 170, 120, 0.5), rgba(140, 200, 160, 0.35), rgba(170, 210, 180, 0.25))` with 1px white border at 20% opacity.
+5. **Animation**: all cubes breathe together via `cube-text-breathe` keyframes on the `.cube-text` container — `scale(1 → 1.03)` and `translateY(0 → -2px)` over 3s.
+6. **Transition**: `.cube-text` fades in with the grid (`opacity 0 → 1`, `translateY(6px → 0)`) with a 0.15s delay after grid appears.
+7. **Text particles**: while birthday grid is visible, floating shape particles (`×`, `○`, `△`, `□`) in pastel colors spawn at the edges of the text containers. 2–3 spawn initially after 1s, then every 2–7s. Particles use existing spring `@keyframes` animations. All cleared on grid exit.
+
+### Birthday diddy + confetti rules
+
+The first time the birthday grid appears, a short melody plays and confetti fires. This happens **once per page load** only, controlled by `birthdayDiddyPlayed` flag.
+
+1. **Diddy**: 8-note synthesized melody (C5→E5→G5→C6→G5→A5→B5→C6), ~2s total. Sine wave primary + triangle harmonic at 2× for sparkle. Each note ~0.22–0.5s with 85% overlap for legato feel. Uses Web Audio API — no audio files.
+2. **Confetti**: 80–120 DOM particles (`.confetti-piece`) burst from center-bottom of viewport (50vw, 85vh). Mix of 8×4px rectangles and 6×6px squares in 7 pastel colors. Each particle gets randomized `--x`, `--y`, `--r` CSS custom properties for unique arc trajectories. `@keyframes confetti-burst` animates: rise to peak at 40%, then gravity fall + rotation + fade. Duration 2.5–3.5s per particle, staggered by 0–300ms. Self-remove after 4s.
+3. Both fire at the moment `is-birthday-grid` is added, inside `enterBirthdayGrid()`.
+4. On subsequent visits to the birthday grid (same page load), neither fires again.
+
 ### Photo viewer rules
 
 The photo viewer is a full-screen overlay for viewing individual birthday photos.

@@ -119,6 +119,107 @@ body::after {
     transition-delay: 0s;
 }
 
+/* ---- Cube Text (pixel font made of tiny cubes) ---- */
+.cube-text {
+    --cube-pixel-size: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s;
+    animation: cube-text-breathe 3s ease-in-out infinite;
+    position: relative;
+}
+
+.cube-text-top {
+    margin-bottom: 10px;
+}
+
+.cube-text-bottom {
+    margin-top: 10px;
+}
+
+.scene.is-birthday-grid .cube-text {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cube-word {
+    display: flex;
+    gap: 3px;
+}
+
+.cube-letter {
+    display: grid;
+    grid-template-columns: repeat(5, var(--cube-pixel-size));
+    grid-template-rows: repeat(7, var(--cube-pixel-size));
+    gap: 1px;
+}
+
+.cube-pixel {
+    width: var(--cube-pixel-size);
+    height: var(--cube-pixel-size);
+    border-radius: 1.5px;
+    background: linear-gradient(135deg, rgba(80, 190, 110, 0.75), rgba(120, 210, 150, 0.6), rgba(160, 225, 175, 0.5));
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 6px rgba(80, 190, 110, 0.35), 0 0 12px rgba(100, 200, 140, 0.15), inset 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.cube-pixel-empty {
+    width: var(--cube-pixel-size);
+    height: var(--cube-pixel-size);
+}
+
+@keyframes cube-text-breathe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-2px) scale(1.03); }
+}
+
+/* ---- Cube Text Particles ---- */
+.cube-text-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 45;
+    font-size: 16px;
+    opacity: 0;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
+    text-shadow: 0 0 6px currentColor;
+    filter: brightness(1.3);
+}
+
+/* ---- Confetti ---- */
+.confetti-piece {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    border-radius: 2px;
+    opacity: 1;
+    animation-name: confetti-burst;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@keyframes confetti-burst {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    15% {
+        opacity: 1;
+    }
+    40% {
+        transform: translate(var(--x), var(--y)) rotate(calc(var(--r) * 0.6)) scale(1);
+        opacity: 0.95;
+    }
+    100% {
+        transform: translate(var(--x), calc(var(--y) + 120vh)) rotate(var(--r)) scale(0.4);
+        opacity: 0;
+    }
+}
+
 .birthday-grid {
     width: 100%;
     display: grid;
