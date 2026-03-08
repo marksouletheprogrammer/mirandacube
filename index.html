@@ -9,10 +9,71 @@
 <body>
     <div class="scene">
         <div class="cube" id="cube">
+            <!-- Terrarium nature scene at cube center -->
+            <div class="terrarium">
+                <!-- Ground & hills -->
+                <div class="ground"></div>
+                <div class="hill hill-back"></div>
+                <div class="hill hill-front"></div>
+
+                <!-- Stream -->
+                <div class="stream"></div>
+
+                <!-- Tree -->
+                <div class="tree">
+                    <div class="tree-shadow"></div>
+                    <div class="tree-trunk"></div>
+                    <div class="tree-canopy"></div>
+                </div>
+
+                <!-- Flowers -->
+                <div class="flower flower-1">
+                    <div class="flower-shadow"></div>
+                    <div class="flower-stem"></div>
+                    <div class="flower-head"></div>
+                </div>
+                <div class="flower flower-2">
+                    <div class="flower-shadow"></div>
+                    <div class="flower-stem"></div>
+                    <div class="flower-head"></div>
+                </div>
+                <div class="flower flower-3">
+                    <div class="flower-shadow"></div>
+                    <div class="flower-stem"></div>
+                    <div class="flower-head"></div>
+                </div>
+
+                <!-- Grass -->
+                <div class="grass grass-1"></div>
+                <div class="grass grass-2"></div>
+                <div class="grass grass-3"></div>
+                <div class="grass grass-4"></div>
+                <div class="grass grass-5"></div>
+
+                <!-- Creatures -->
+                <div class="bee"></div>
+                <div class="butterfly"></div>
+
+                <!-- Particles -->
+                <div class="pollen pollen-1"></div>
+                <div class="pollen pollen-2"></div>
+                <div class="pollen pollen-3"></div>
+                <div class="pollen pollen-4"></div>
+                <div class="pollen pollen-5"></div>
+                <div class="sparkle sparkle-1"></div>
+                <div class="sparkle sparkle-2"></div>
+                <div class="sparkle sparkle-3"></div>
+                <div class="petal petal-1"></div>
+                <div class="petal petal-2"></div>
+
+                <!-- Lighting overlay -->
+                <div class="light-overlay"></div>
+            </div>
+
             <!-- Front face - Main Menu -->
             <div class="cube-face face-front">
                 <div class="menu-option edge-right" data-face="right">TBD</div>
-                <div class="menu-option edge-top" data-face="top">TBD</div>
+                <div class="menu-option edge-top birthday-option" data-face="top" data-option="birthday">birthday</div>
                 <div class="menu-option edge-left" data-face="left">TBD</div>
                 <div class="menu-option edge-bottom" data-face="bottom">TBD</div>
             </div>
@@ -39,6 +100,23 @@
 
             <!-- Back face (unused but completes the cube) -->
             <div class="cube-face face-back"></div>
+        </div>
+
+        <div class="birthday-flash" id="birthday-flash"></div>
+
+        <div class="birthday-grid-view" id="birthday-grid-view" aria-hidden="true">
+            <div class="birthday-grid" role="menu" aria-label="Birthday cube grid">
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+                <div class="memory-cube" role="menuitem" tabindex="0"><div class="memory-cube-inner"><div class="memory-cube-face-front"></div></div></div>
+            </div>
+            <button class="birthday-back-arrow" id="birthday-back-arrow" aria-label="Return to main cube menu">↓</button>
         </div>
     </div>
 
