@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Cube Menu</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scene">
+        <div class="cube" id="cube">
+            <!-- Front face - Main Menu -->
+            <div class="cube-face face-front">
+                <div class="menu-option edge-right" data-face="right">TBD</div>
+                <div class="menu-option edge-top" data-face="top">TBD</div>
+                <div class="menu-option edge-left" data-face="left">TBD</div>
+                <div class="menu-option edge-bottom" data-face="bottom">TBD</div>
+            </div>
+
+            <!-- Right face -->
+            <div class="cube-face face-right">
+                <div class="back-arrow" data-return="front">←</div>
+            </div>
+
+            <!-- Left face -->
+            <div class="cube-face face-left">
+                <div class="back-arrow" data-return="front">→</div>
+            </div>
+
+            <!-- Top face -->
+            <div class="cube-face face-top">
+                <div class="back-arrow" data-return="front">↓</div>
+            </div>
+
+            <!-- Bottom face -->
+            <div class="cube-face face-bottom">
+                <div class="back-arrow" data-return="front">↑</div>
+            </div>
+
+            <!-- Back face (unused but completes the cube) -->
+            <div class="cube-face face-back"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

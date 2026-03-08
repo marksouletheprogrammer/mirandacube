@@ -1,0 +1,178 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0812;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 30% 40%, rgba(200, 170, 230, 0.09) 0%, transparent 60%),
+        radial-gradient(ellipse at 65% 25%, rgba(180, 160, 210, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 70% 70%, rgba(180, 220, 200, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+/* ---- 3D scene ---- */
+.scene {
+    width: 300px;
+    height: 300px;
+    perspective: 900px;
+}
+
+.cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: translateZ(-150px);
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- Faces ---- */
+.cube-face {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    background: linear-gradient(135deg,
+        rgba(210, 190, 235, 0.15),
+        rgba(195, 175, 225, 0.12),
+        rgba(190, 210, 205, 0.06));
+    box-shadow:
+        0 0 40px rgba(190, 170, 220, 0.12),
+        0 0 80px rgba(210, 190, 240, 0.08),
+        inset 0 0 40px rgba(255, 255, 255, 0.04);
+    backface-visibility: hidden;
+}
+
+.face-front  { transform: rotateY(   0deg) translateZ(150px); }
+.face-back   { transform: rotateY( 180deg) translateZ(150px); }
+.face-right  { transform: rotateY(  90deg) translateZ(150px); }
+.face-left   { transform: rotateY( -90deg) translateZ(150px); }
+.face-top    { transform: rotateX(  90deg) translateZ(150px); }
+.face-bottom { transform: rotateX( -90deg) translateZ(150px); }
+
+/* ---- Cube rotation states ---- */
+.cube.show-front  { transform: translateZ(-150px) rotateY(    0deg); }
+.cube.show-back   { transform: translateZ(-150px) rotateY( -180deg); }
+.cube.show-right  { transform: translateZ(-150px) rotateY(  -90deg); }
+.cube.show-left   { transform: translateZ(-150px) rotateY(   90deg); }
+.cube.show-top    { transform: translateZ(-150px) rotateX(  -90deg); }
+.cube.show-bottom { transform: translateZ(-150px) rotateX(   90deg); }
+
+/* ---- Menu options on front face ---- */
+.menu-option {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 8px 18px;
+    border-radius: 4px;
+    transition: color 0.25s, text-shadow 0.25s;
+    white-space: nowrap;
+}
+
+.menu-option:hover {
+    color: #fff;
+    text-shadow: 0 0 12px rgba(230, 210, 255, 0.9);
+}
+
+/* Position each option at its cube edge, baseline facing outward */
+.edge-right {
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: center center;
+}
+
+.edge-left {
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: center center;
+}
+
+.edge-top {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    transform-origin: center center;
+}
+
+.edge-bottom {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ---- Back arrows on empty faces ---- */
+.back-arrow {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: 10;
+}
+
+.back-arrow:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 20px rgba(200, 180, 230, 0.4);
+    transform: scale(1.12);
+}
+
+.back-arrow:active {
+    transform: scale(0.95);
+}
+
+/* Arrow placement: right face arrow ← sits at left edge */
+.face-right  .back-arrow { left: 20px;  top: 50%; margin-top: -28px; }
+/* Arrow placement: left face arrow → sits at right edge */
+.face-left   .back-arrow { right: 20px; top: 50%; margin-top: -28px; }
+/* Arrow placement: top face arrow ↓ sits at bottom edge */
+.face-top    .back-arrow { bottom: 20px; left: 50%; margin-left: -28px; }
+/* Arrow placement: bottom face arrow ↑ sits at top edge */
+.face-bottom .back-arrow { top: 20px;   left: 50%; margin-left: -28px; }
+
+/* ---- Dice dots decoration ---- */
+.cube-face::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 6px;
+    height: 6px;
+    background: rgba(230, 220, 245, 0.35);
+    border-radius: 50%;
+    box-shadow:
+        268px 0   rgba(230, 220, 245, 0.35),
+        0   268px rgba(230, 220, 245, 0.35),
+        268px 268px rgba(230, 220, 245, 0.35);
+    pointer-events: none;
+}
