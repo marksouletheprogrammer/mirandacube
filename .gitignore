@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+._*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Windsurf
+.windsurf/
+
+# Thumbnails
+Thumbs.db
+
+# Logs
+*.log
