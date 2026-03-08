@@ -162,12 +162,43 @@ The top front option can branch into a dedicated submenu experience inspired by 
 1. The **top** front option label is exactly `birthday` in lowercase.
 2. Clicking `birthday` from the front face rotates the cube to the **top** first, then transitions into the birthday grid view.
 3. Birthday view is a **3×3 grid** of mini cubes. No headers, no extra UI chrome.
-4. Mini cubes are intentionally **empty-looking** for now (no photos/thumbnails yet).
-5. Mini cubes use restrained hover motion only: slight grow/lift and subtle glow; on leave, they return to rest smoothly.
-6. Birthday view has one back control: a **down arrow** (`↓`) in the standard 56×56 circular arrow style.
-7. Clicking the birthday back arrow returns to cube mode, then rotates the cube back down to the front menu.
-8. `Escape` in birthday view triggers the same back sequence.
-9. During birthday enter/exit transitions, clicks are locked out to avoid state corruption.
+4. Mini cubes display **photo thumbnails** loaded from the `birthday/` folder, sorted alphabetically. Photos are listed in a `const photos` array in `script.js`. Run `./build-photos.sh` to update the array after adding/removing photos.
+5. Thumbnails use `background-image` on `.memory-cube-face-front` with `background-size: cover`. Cubes without photos remain empty.
+6. If more than 9 photos exist, only the first 9 (alphabetically) are displayed. A console error is logged.
+7. Mini cubes use restrained hover motion only: slight grow/lift and subtle glow; on leave, they return to rest smoothly. This applies identically to photo and empty cubes.
+8. Clicking a photo cube opens the **photo viewer** (see below). Clicking an empty cube does nothing.
+9. Birthday view has one back control: a **down arrow** (`↓`) in the standard 56×56 circular arrow style.
+10. Clicking the birthday back arrow returns to cube mode, then rotates the cube back down to the front menu.
+11. `Escape` in birthday view triggers the same back sequence.
+12. During birthday enter/exit transitions, clicks are locked out to avoid state corruption.
+
+### Photo viewer rules
+
+The photo viewer is a full-screen overlay for viewing individual birthday photos.
+
+1. The `.photo-viewer` element uses `position: fixed; inset: 0` to cover the entire viewport. It is a child of `.scene` but breaks out via fixed positioning.
+2. Layout is `flex-direction: column` — the image is centered, the back button sits below it.
+3. The image uses `object-fit: contain` with `max-height: 70vh` to guarantee space below for the back button.
+4. **Image border**: 3px `border-image` using a pastel rainbow gradient (lavender → lilac → pink → mint → baby blue → lavender) at 70–85% opacity.
+5. **Image glow**: multi-layer `box-shadow` in lavender, lilac, pink, mint, and blue at 15–25% opacity.
+6. **Back button**: `×` character in the standard 56×56 circular style, centered horizontally below the image with `margin-top: 40px`.
+7. The image and back button use `z-index: 2`; spring effects use `z-index: 1` — effects always render **behind** the image, never over it.
+8. Opening the viewer adds `is-photo-viewer` to `.scene`. Closing removes it. Lock-out: 400ms.
+9. `Escape` key closes the photo viewer, returning to the birthday grid.
+
+### Spring effects rules
+
+While viewing a photo, decorative CSS-drawn spring shapes drift through the void space around the image.
+
+1. Effects are **pure CSS shapes** matching the cube's frosted-glass aesthetic — semi-transparent fills, thin 1px white borders, soft lavender/lilac box-shadows. **No emoji.**
+2. **Shape types**: hearts (28px, two overlapping pseudo-elements), butterflies (44×30px, two wing pseudo-elements), flowers (10px center + 8 petal box-shadows), leaves (18×28px teardrop with vein line), sparkles (14px diamond), pollen dots (8px, 5 color variants: lavender, mint, pink, gold, blue).
+3. Effects spawn after a **pseudorandom delay of 10–20 seconds** from opening the viewer.
+4. **2–4 effects** spawn initially, staggered by 600–1800ms.
+5. After each effect, the next is scheduled **3–7 seconds** later.
+6. **40% chance** of a pollen burst (2–3 extra pollen particles) alongside each main effect.
+7. Effects are positioned at the **viewport edges** (left 2–14vw, right 86–97vw, top 3–14vh, bottom 76–92vh) — in the void, not over the photo.
+8. **7 animation types**: `spring-float-up`, `spring-drift-right`, `spring-drift-left`, `spring-zigzag`, `spring-wander`, `spring-bloom`, `spring-twinkle`. All use CSS `@keyframes`.
+9. Each effect self-removes after its animation completes. All effects and timers are **cleared instantly** when closing the photo viewer.
 
 ### Birthday text appearance
 
@@ -214,12 +245,27 @@ Transitions use a **spring-flash overlay** — a bright radial bloom that masks 
 
 ## Sound Rules
 
-- Rotation triggers a short sine-wave sweep: start frequency → half frequency over 0.15s, then fade to silence by 0.2s.
-- Forward navigation (front → other face): **440 Hz** start.
-- Return navigation (other face → front): **330 Hz** start.
-- Volume: quiet (`gain: 0.08`). Sound should be noticeable but never jarring.
+Two sound functions exist: `playSound` (GameCube-inspired) and `playSimpleSound` (original sine sweep).
+
+### GameCube whoosh (`playSound`) — forward cube rotations only
+- Three layered oscillators:
+  1. **Main tone**: sine sweep from `freq × 1.2` → `freq × 0.4` over 0.18s, gain 0.07.
+  2. **Detuned twin**: same sweep +25 cents detune, gain 0.04. Creates bubbly warble.
+  3. **Harmonic overtone**: triangle wave at `freq × 2` → `freq × 0.8` over 0.12s, gain 0.025. Adds sparkle.
+- Used when: cube rotates to a non-front face (**440 Hz** base).
+
+### Simple sine sweep (`playSimpleSound`) — all other interactions
+- Single sine oscillator: `freq` → `freq / 2` over 0.15s, gain 0.08, fade to silence by 0.2s.
+- Used when:
+  - Cube returns to front face (**330 Hz**).
+  - Exit birthday grid (**330 Hz**).
+  - Open photo viewer (**550 Hz**).
+  - Close photo viewer (**330 Hz**).
+
+### General
+- Volume is quiet. Sound should be noticeable but never jarring.
 - Sound creation uses the **Web Audio API** (`AudioContext`). No audio files.
-- Sound failures are silently caught (`try/catch`). The game must never break due to audio.
+- Sound failures are silently caught (`try/catch`). The app must never break due to audio.
 
 ---
 
