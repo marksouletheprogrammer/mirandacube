@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load photos from birthday folder
     // Note: Update this array when adding/removing photos from the birthday/ folder
     function loadBirthdayPhotos() {
-        const photos = ['b.png', 'c.png', 'd.png', 'e.png', 'f.jpg', 'g.jpg', 'z.png'];
+        const photos = ['a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg', 'g.jpg', 'h.jpg', 'i.jpg'];
         const memoryCubes = document.querySelectorAll('.memory-cube');
         
         // Sort alphabetically
