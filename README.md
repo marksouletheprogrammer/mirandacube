@@ -1,6 +1,4 @@
-# 3D Cube Menu
-
-A GameCube-inspired 3D cube menu with a birthday photo grid feature.
+# MirandaCube
 
 ---
 
