@@ -1,6 +1,6 @@
-# AGENTS.md — 3D Cube Menu Style Guide
+# AGENTS.md — MirandaCube Style Guide
 
-This document defines the strict visual and interaction rules for the 3D Cube Menu project. These rules **must not be violated** unless the user explicitly overrides them.
+This document defines the strict visual and interaction rules for the MirandaCube project. These rules **must not be violated** unless the user explicitly overrides them.
 
 ---
 
